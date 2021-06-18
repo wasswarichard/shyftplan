@@ -1,0 +1,8 @@
+{
+  "port": 4000,
+  "apiUrl": "https://fyx8bq1lpa.execute-api.eu-central-1.amazonaws.com/Prod",
+  "authorization" : {
+    "login": "frontend@shyftplan.com",
+    "password": "api_test_auth_token"
+  }
+}
