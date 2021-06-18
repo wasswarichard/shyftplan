@@ -4,7 +4,6 @@ import routes from "../../routes/routes";
 import "./Sidebar.css"
 
 const Sidebar = () => {
-    const isNavbarVisible = true;
     const location = useLocation();
     const getNavLinkClass = (path) => {
         return location.pathname === path ? "active" : "";
