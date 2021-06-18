@@ -105,7 +105,7 @@ const Events = () => {
                                 }}
                                 open={OpenSnackbar}
                                 autoHideDuration={300}
-                                message= 'Missing request data'
+                                message= "Requested time data not found"
                                 action={
                                     <React.Fragment>
                                         <IconButton
