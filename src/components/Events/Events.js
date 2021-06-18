@@ -39,11 +39,16 @@ const Events = () => {
                 }
             })
                 .then(response => {
-                    response.data.items.map(result => {
-                        return result.positionName =  result.position.name
+                    const data = response.data.items.map(result => {
+                        return {
+                            positionName: result.position.name,
+                            id: result.id,
+                            startsAt: new Date(result.startsAt).toLocaleString(),
+                            endsAt: new Date(result.endsAt).toLocaleString()
+                        }
                     })
                     hideLoader();
-                    setEvents(response.data.items)
+                    setEvents(data);
                 });
         };
         loadEvents();

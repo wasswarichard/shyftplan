@@ -17,6 +17,11 @@ const EventContent = ({modelInfo, show, handleClose}) => {
                 auth: config.authorization,
             })
                 .then(response => {
+                    response.data = {
+                        ...response.data,
+                        startsAt: new Date(response.data.startsAt).toLocaleString(),
+                        endsAt: new Date(response.data.endsAt).toLocaleString()
+                    }
                     setEventDetails(response.data)
                     hideLoader();
                 });
