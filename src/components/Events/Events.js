@@ -6,8 +6,11 @@ import TablePagination from "../../utilities/DataTable/TablePagination/TablePagi
 import TableHeader from "../../utilities/DataTable/TableHeader/TableHeader";
 import TableSearch from "../../utilities/DataTable/TableSearch/TableSearch";
 import EventContent from "../EventContent/EventContent";
-import {Snackbar} from "@material-ui/core";
-import {Alert} from "react-bootstrap";
+import Snackbar from "@material-ui/core/Snackbar";
+import CloseIcon from '@material-ui/icons/Close';
+import IconButton from "@material-ui/core/IconButton";
+
+
 
 const Events = () => {
     const [events, setEvents] = useState([]);
@@ -19,8 +22,15 @@ const Events = () => {
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
     const [queryDataParams, setQueryDataParams] = useState({});
-    const [error, setError] = useState(false);
 
+    const [OpenSnackbar, setOpenSnackbar] = useState(false);
+
+    const handleCloseSnackbar = (event, reason) => {
+        if(reason === 'clickaway'){
+            return;
+        }
+        setOpenSnackbar(false)
+    }
 
     useEffect(() => {
         modalInfo.id && setShow(true);
@@ -31,7 +41,6 @@ const Events = () => {
         {name: "Start time", field: "startsAt", type:"date"},
         {name: "End time", field: "endTime", type: "date"}
     ]
-
     const filterParameters = (searchParam) => {
         const searchParamValue =  new Date(searchParam.target.value).toISOString();
         switch (searchParam.target.attributes["rk-model"].value) {
@@ -69,7 +78,7 @@ const Events = () => {
                     setEvents(data);
                 }).catch(error => {
                     hideLoader();
-                    setError(true);
+                    setOpenSnackbar(true)
                 })
         };
         loadEvents();
@@ -89,15 +98,27 @@ const Events = () => {
                             <TablePagination eventsPerPage={eventsPerPage} totalEvents={events.length} paginate={paginate}/>
                         </div>
                         {loader}
-                        {/*{error && (<div className="login-error"><span className="error" style={{}}>Error</span></div>)}*/}
-                        {error && (
-                            <Snackbar autoHideDuration={3000}>
-                                <Alert severity="error">
-                                    <div style={{ display: 'flex', flexFlow: 'column', alignItems: 'center'}}>
-                                        Testing
-                                    </div>
-                                </Alert>
-                            </Snackbar>
+                        {OpenSnackbar && (
+                            <Snackbar
+                                anchorOrigin={{
+                                    vertical: 'top',
+                                    horizontal: 'center',
+                                }}
+                                open={OpenSnackbar}
+                                autoHideDuration={300}
+                                message= 'Missing request data'
+                                action={
+                                    <React.Fragment>
+                                        <IconButton
+                                            aria-label="close"
+                                            color="inherit"
+                                            onClick={handleCloseSnackbar}
+                                        >
+                                            <CloseIcon />
+                                        </IconButton>
+                                    </React.Fragment>
+                                }
+                            />
                         )
                         }
                     </div>
