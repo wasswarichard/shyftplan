@@ -6,6 +6,8 @@ import TablePagination from "../../utilities/DataTable/TablePagination/TablePagi
 import TableHeader from "../../utilities/DataTable/TableHeader/TableHeader";
 import TableSearch from "../../utilities/DataTable/TableSearch/TableSearch";
 import EventContent from "../EventContent/EventContent";
+import {Snackbar} from "@material-ui/core";
+import {Alert} from "react-bootstrap";
 
 const Events = () => {
     const [events, setEvents] = useState([]);
@@ -16,8 +18,8 @@ const Events = () => {
     const [modalInfo, setModalInfo] = useState({});
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
-    const [searchValue, setSearchValue] = useState('');
-    const [searchField, setSearchField] = useState('');
+    const [queryDataParams, setQueryDataParams] = useState({});
+    const [error, setError] = useState(false);
 
 
     useEffect(() => {
@@ -29,13 +31,29 @@ const Events = () => {
         {name: "Start time", field: "startsAt", type:"date"},
         {name: "End time", field: "endTime", type: "date"}
     ]
+
+    const filterParameters = (searchParam) => {
+        const searchParamValue =  new Date(searchParam.target.value).toISOString();
+        switch (searchParam.target.attributes["rk-model"].value) {
+            case 'endTime':
+                setQueryDataParams({endsAt: searchParamValue} )
+                break;
+            case 'startsAt':
+                setQueryDataParams({startsAt: searchParamValue} )
+                break;
+            default:
+                setQueryDataParams({} )
+
+        }
+    }
     useEffect(() => {
         showLoader();
         const loadEvents = async () => {
             await axios.get(`${config.apiUrl}/events`, {
                 auth: config.authorization,
                 params: {
-                    limit: paginationLimit
+                    limit: paginationLimit,
+                    ...queryDataParams
                 }
             })
                 .then(response => {
@@ -49,26 +67,19 @@ const Events = () => {
                     })
                     hideLoader();
                     setEvents(data);
-                });
+                }).catch(error => {
+                    hideLoader();
+                    setError(true);
+                })
         };
         loadEvents();
-    }, [paginationLimit]);
+    }, [paginationLimit, queryDataParams]);
     const indexOfLastEvent =  currentPage * eventsPerPage;
     const indexOfFirstEvent = indexOfLastEvent - eventsPerPage;
-
-    useEffect(() => {
-        if(!searchValue) return setEvents(events);
-        // setEvents([]);
-
-    }, [searchValue, searchField])
-
     const currentEvents =  events.slice(indexOfFirstEvent, indexOfLastEvent)
     const paginate = (pageNumber) => setCurrentPage(pageNumber)
     const onClickLoadMore = () => setPaginationLimit(paginationLimit + 20)
-    const filterParameters = (searchParam) => {
-        setSearchValue(searchParam.target.value);
-        setSearchField(searchParam.target.attributes["rk-model"].value)
-    }
+
     return (
         <div className="main-content">
             <main>
@@ -78,6 +89,17 @@ const Events = () => {
                             <TablePagination eventsPerPage={eventsPerPage} totalEvents={events.length} paginate={paginate}/>
                         </div>
                         {loader}
+                        {/*{error && (<div className="login-error"><span className="error" style={{}}>Error</span></div>)}*/}
+                        {error && (
+                            <Snackbar autoHideDuration={3000}>
+                                <Alert severity="error">
+                                    <div style={{ display: 'flex', flexFlow: 'column', alignItems: 'center'}}>
+                                        Testing
+                                    </div>
+                                </Alert>
+                            </Snackbar>
+                        )
+                        }
                     </div>
                     <table  id="dtBasicExample" className="table table-striped table-bordered table-sm" cellSpacing="0" width="100%">
                         <caption>
@@ -104,9 +126,6 @@ const Events = () => {
                 { show ? <EventContent handleClose={handleClose} modelInfo={modalInfo} show={show}/>: null}
             </main>
         </div>
-
-
-
     )
 }
 export default Events;
