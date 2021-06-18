@@ -132,7 +132,7 @@ const Events = () => {
                                 <TableSearch search={head} filterParameters={filterParameters}/></td>))}
                         </tr>
                         {currentEvents.length > 0 && currentEvents.map( event => {
-                            return ( <tr key={event.id} onClick={() => setModalInfo(event)}>
+                            return ( <tr key={event.id} onClick={() => setModalInfo(event)} style={{cursor: 'pointer'}}>
                                 <td>{event.id}</td>
                                 <td>{event.positionName}</td>
                                 <td>{event.startsAt}</td>
